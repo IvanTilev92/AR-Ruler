@@ -42,6 +42,30 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        print("touch detected")
+        
+        if let toouchLocation = touches.first?.location(in: sceneView) {
+            let hitTestResults = sceneView.hitTest(toouchLocation, types: .featurePoint)
+            
+            if let hitResult = hitTestResults.first {
+                addDot(at: hitResult)
+            }
+        }
+    }
+    
+    // AddDot method
+    func addDot(at hitResult: ARHitTestResult) {
+        
+        // Creating a red dot
+        let dotGeometry = SCNSphere(radius: 0.005)
+        let material = SCNMaterial()
+        material.diffuse.contents = UIColor.red
+        
+        dotGeometry.materials = [material]
+        
+        // Specifying
+        let dotNode = SCNNode(geometry: dotGeometry)
+        dotNode.position = SCNVector3(hitResult.worldTransform.columns.3.x, hitResult.worldTransform.columns.3.y, hitResult.worldTransform.columns.3.z)
+        
+        sceneView.scene.rootNode.addChildNode(dotNode)
     }
 }
