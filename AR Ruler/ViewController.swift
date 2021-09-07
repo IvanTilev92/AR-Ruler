@@ -16,6 +16,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     // Arrays that keep track of all the dots on the screen
     var dotNodes = [SCNNode]()
     
+    var textNode = SCNNode()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -45,6 +47,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        // Check and remove the two dots and presend new dot when the user taps 3 times
+        if dotNodes.count >= 2 {
+            for dot in dotNodes {
+                dot.removeFromParentNode()
+            }
+            dotNodes = [SCNNode]()
+        }
         
         if let toouchLocation = touches.first?.location(in: sceneView) {
             let hitTestResults = sceneView.hitTest(toouchLocation, types: .featurePoint)
@@ -101,11 +111,13 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     // Update text method
     func updateText(text: String, atPostion position: SCNVector3) {
         
+        textNode.removeFromParentNode()
+        
         let textGeometry = SCNText(string: text, extrusionDepth: 1.0)
         
         textGeometry.firstMaterial?.diffuse.contents = UIColor.red
         
-        let textNode = SCNNode(geometry: textGeometry)
+        textNode = SCNNode(geometry: textGeometry)
         
         textNode.position = SCNVector3(position.x, position.y + 0.01, position.z)
         
